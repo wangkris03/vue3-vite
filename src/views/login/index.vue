@@ -4,7 +4,7 @@ import { useRouter } from "vue-router"
 import { useUserStore } from "@/store/modules/user"
 import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
-import { type FormInstance, FormRules } from "element-plus"
+import { type FormInstance, FormRules, ElMessage } from "element-plus"
 import { getLoginCodeApi } from "@/api/login"
 import { type ILoginRequestData } from "@/api/login/types/login"
 
@@ -18,15 +18,15 @@ const codeUrl = ref("")
 /** 登录表单数据 */
 const loginForm: ILoginRequestData = reactive({
   username: "admin",
-  password: "12345678",
-  code: ""
+  password: "",
+  code: "1"
 })
 /** 登录表单校验规则 */
 const loginFormRules: FormRules = {
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
   password: [
     { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 8, max: 16, message: "长度在 8 到 16 个字符", trigger: "blur" }
+    { min: 1, max: 16, message: "长度在 1 到 16 个字符", trigger: "blur" }
   ],
   code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
 }
@@ -46,6 +46,7 @@ const handleLogin = () => {
         })
         .catch(() => {
           createCode()
+          ElMessage.error("登录失败")
           loginForm.password = ""
         })
         .finally(() => {
